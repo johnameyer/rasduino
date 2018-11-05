@@ -1,0 +1,900 @@
+[
+    {
+        "id": "908ae2c0.dad89",
+        "type": "tab",
+        "label": "Data from Raspberry Pi",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "afe73ce4.aca77",
+        "type": "tab",
+        "label": "Data for Device",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "c0ddbbdc.d1d4c8",
+        "type": "tab",
+        "label": "Callback",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "d5f424e.3e83ed8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1c107c8c.6f5233",
+        "type": "http in",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "url": "/data/:device",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100.10000610351562,
+        "y": 101,
+        "wires": [
+            [
+                "ac45ec1a.f0d4c",
+                "39ae57fe.db9648",
+                "77705225.ef430c"
+            ]
+        ]
+    },
+    {
+        "id": "ac45ec1a.f0d4c",
+        "type": "http response",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 328.1000061035156,
+        "y": 100.60000610351562,
+        "wires": []
+    },
+    {
+        "id": "9eeab526.35da28",
+        "type": "http in",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "url": "/next",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 84.10000610351562,
+        "y": 118.20001220703125,
+        "wires": [
+            [
+                "a42f3d61.79517"
+            ]
+        ]
+    },
+    {
+        "id": "9fdd40ed.ac0f08",
+        "type": "http request",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 551.0000610351562,
+        "y": 305,
+        "wires": [
+            [
+                "fa5b6681.6fb41"
+            ]
+        ]
+    },
+    {
+        "id": "7f211cc2.03198c",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "algorithm",
+        "func": "result = {\n    'seed_artists': '1dfeR4HaWDbWqFHLkxsg1d',\n    target_valence: 0.5,\n    target_danceability: 0.5,\n    target_energy: 0.5\n}\n\nif(msg.payload.luminosity <= 0.3){\n    result['target_valence'] -= 0.2\n    result['target_danceability'] -= 0.2\n    result['target_energy'] -= 0.2\n} else if(msg.payload.luminosity > 0.3 && msg.payload.luminosity <= 0.6){\n    result['target_valence'] += 0.0\n    result['target_danceability'] += 0.0\n    result['target_energy'] += 0.0\n\n} else {\n    result['target_valence'] += 0.5\n    result['target_danceability'] += 0.5\n    result['target_energy'] += 0.5\n}\nif(msg.payload.temperature <= 0.3){\n    result['target_valence'] -= 0.2\n    result['target_danceability'] -= 0.2\n    result['target_energy'] -= 0.2\n} else if(msg.payload.temperature > 0.3 && msg.payload.light <= 0.6){\n    result['target_valence'] += 0.0\n    result['target_danceability'] += 0.0\n    result['target_energy'] += 0.0\n\n} else {\n    result['target_valence'] += 0.5\n    result['target_danceability'] += 0.5\n    result['target_energy'] += 0.5\n}\nif(msg.payload.humidity <= 0.3){\n    result['target_valence'] -= 0.2\n    result['target_danceability'] -= 0.2\n    result['target_energy'] -= 0.2\n} else if(msg.payload.humidity > 0.3 && msg.payload.light <= 0.6){\n    result['target_valence'] += 0.0\n    result['target_danceability'] += 0.0\n    result['target_energy'] += 0.0\n\n} else {\n    result['target_valence'] += 0.5\n    result['target_danceability'] += 0.5\n    result['target_energy'] += 0.5\n}\nif(msg.payload.noise <= 0.3){\n    result['target_valence'] -= 0.2\n    result['target_danceability'] -= 0.2\n    result['target_energy'] -= 0.2\n} else if(msg.payload.noise > 0.3 && msg.payload.light <= 0.6){\n    result['target_valence'] += 0.0\n    result['target_danceability'] += 0.0\n    result['target_energy'] += 0.0\n\n} else {\n    result['target_valence'] += 0.5\n    result['target_danceability'] += 0.5\n    result['target_energy'] += 0.5\n}\n\nreturn {payload: result}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 355.5,
+        "y": 228,
+        "wires": [
+            [
+                "8716bc1d.01664"
+            ]
+        ]
+    },
+    {
+        "id": "8716bc1d.01664",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "func": "var str = [];\nfor (var p in msg.payload)\n    if (msg.payload.hasOwnProperty(p)) {\n        str.push(encodeURIComponent(p) + \"=\" + encodeURIComponent(msg.payload[p]));\n    }\nreturn {\n    url: \"https://api.spotify.com/v1/recommendations?\" + str.join(\"&\"),\n    headers: flow.get(\"auth\")\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530.5,
+        "y": 227,
+        "wires": [
+            [
+                "9fdd40ed.ac0f08"
+            ]
+        ]
+    },
+    {
+        "id": "59333e81.96d41",
+        "type": "inject",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 86.5,
+        "y": 42,
+        "wires": [
+            [
+                "3ff376d5.749faa"
+            ]
+        ]
+    },
+    {
+        "id": "50ad763d.64cbc8",
+        "type": "http in",
+        "z": "c0ddbbdc.d1d4c8",
+        "name": "",
+        "url": "/callback",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "a1838ca8.249b7",
+                "10573818.08d408"
+            ]
+        ]
+    },
+    {
+        "id": "bbbfae5f.37b04",
+        "type": "http in",
+        "z": "c0ddbbdc.d1d4c8",
+        "name": "",
+        "url": "/callback",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 280,
+        "wires": [
+            [
+                "a1838ca8.249b7",
+                "10573818.08d408"
+            ]
+        ]
+    },
+    {
+        "id": "c3e78d54.6d64",
+        "type": "http in",
+        "z": "c0ddbbdc.d1d4c8",
+        "name": "",
+        "url": "/callback",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 420,
+        "wires": [
+            [
+                "a1838ca8.249b7",
+                "10573818.08d408"
+            ]
+        ]
+    },
+    {
+        "id": "10573818.08d408",
+        "type": "http response",
+        "z": "c0ddbbdc.d1d4c8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 348.89996337890625,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "a1838ca8.249b7",
+        "type": "debug",
+        "z": "c0ddbbdc.d1d4c8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 555.8999633789062,
+        "y": 284,
+        "wires": []
+    },
+    {
+        "id": "fa5b6681.6fb41",
+        "type": "json",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 712.5,
+        "y": 280,
+        "wires": [
+            [
+                "2dc11c5f.8b5514"
+            ]
+        ]
+    },
+    {
+        "id": "5a5e5a67.bc6ccc",
+        "type": "http request",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 554.5,
+        "y": 359,
+        "wires": [
+            [
+                "69f2eeaf.3e3dc"
+            ]
+        ]
+    },
+    {
+        "id": "a42f3d61.79517",
+        "type": "change",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "auth",
+                "pt": "flow",
+                "to": "{ \"Authorization\": (\"Bearer \" & msg.req.query.tok)}",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "user",
+                "pt": "flow",
+                "to": "whaleoftime",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "id",
+                "pt": "flow",
+                "to": "1",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 287.5,
+        "y": 119,
+        "wires": [
+            [
+                "efbb93a2.c6c7e",
+                "7da57b3c.aa1d84"
+            ]
+        ]
+    },
+    {
+        "id": "36b4342c.f0b8a4",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "playlist",
+        "func": "msg['payload'] = {\n    \"name\": \"Mood Playlist\",\n    \"description\": \"Today's Mood\",\n    \"public\": false\n}\nmsg['url'] = \"https://api.spotify.com/v1/users/\" + flow.get('user') + '/playlists',\nmsg['headers'] = flow.get(\"auth\")\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 352.5,
+        "y": 336,
+        "wires": [
+            [
+                "5a5e5a67.bc6ccc"
+            ]
+        ]
+    },
+    {
+        "id": "69f2eeaf.3e3dc",
+        "type": "json",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 709.300048828125,
+        "y": 380.79998779296875,
+        "wires": [
+            [
+                "bf618737.9c2d88",
+                "a42046ff.bf2b58"
+            ]
+        ]
+    },
+    {
+        "id": "bf618737.9c2d88",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "func": "return {\n    url: 'https://api.spotify.com/v1/playlists/'+ msg.payload.id + '/tracks',\n    headers: flow.get('auth')\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 892.1000366210938,
+        "y": 338.60003662109375,
+        "wires": [
+            [
+                "857a46a4.c9cbb8"
+            ]
+        ]
+    },
+    {
+        "id": "2dc11c5f.8b5514",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "tracks",
+        "func": "var uris = []\nvar tracks = msg.payload.tracks\nfor(var i = 0; i < tracks.length; i++){\n    uris.push(tracks[i].uri)\n}\nreturn {\n    payload: {\n        uris: uris\n    }\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 897.699951171875,
+        "y": 237.60000610351562,
+        "wires": [
+            [
+                "881d596d.0b1e38"
+            ]
+        ]
+    },
+    {
+        "id": "881d596d.0b1e38",
+        "type": "join",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "mode": "custom",
+        "build": "merged",
+        "property": "",
+        "propertyType": "full",
+        "key": "",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 1175.699951171875,
+        "y": 268.20001220703125,
+        "wires": [
+            [
+                "1a02418f.8b7a0e"
+            ]
+        ]
+    },
+    {
+        "id": "3be08889.7f3ec8",
+        "type": "http request",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 1482.89990234375,
+        "y": 268,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "857a46a4.c9cbb8",
+        "type": "rbe",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "url",
+        "x": 1028.5000610351562,
+        "y": 339.20001220703125,
+        "wires": [
+            [
+                "881d596d.0b1e38"
+            ]
+        ]
+    },
+    {
+        "id": "1a02418f.8b7a0e",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "func": "\nreturn msg.payload;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1319.699951171875,
+        "y": 267.60003662109375,
+        "wires": [
+            [
+                "3be08889.7f3ec8"
+            ]
+        ]
+    },
+    {
+        "id": "923592c7.841c1",
+        "type": "http response",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1041.7000732421875,
+        "y": 427.20001220703125,
+        "wires": []
+    },
+    {
+        "id": "a42046ff.bf2b58",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "func": "msg['payload'] = msg.payload.uri;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 891.7000732421875,
+        "y": 426.60003662109375,
+        "wires": [
+            [
+                "923592c7.841c1"
+            ]
+        ]
+    },
+    {
+        "id": "7b7794a9.73bbcc",
+        "type": "cloudant out",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "cloudant": "",
+        "database": "devices",
+        "service": "justLooking-cloudantNoSQLDB",
+        "payonly": true,
+        "operation": "insert",
+        "x": 680,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "efbb93a2.c6c7e",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "func": "msg.payload['_id'] = flow.get('id')\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 492.10003662109375,
+        "y": 86.79999542236328,
+        "wires": [
+            [
+                "66b4c57a.b4ab3c"
+            ]
+        ]
+    },
+    {
+        "id": "66b4c57a.b4ab3c",
+        "type": "cloudant in",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "cloudant": "",
+        "database": "devices",
+        "service": "justLooking-cloudantNoSQLDB",
+        "search": "_id_",
+        "design": "",
+        "index": "",
+        "x": 166.10009765625,
+        "y": 291.0000305175781,
+        "wires": [
+            [
+                "7f211cc2.03198c",
+                "36b4342c.f0b8a4"
+            ]
+        ]
+    },
+    {
+        "id": "ecd0457c.a3ebc8",
+        "type": "function",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "func": "msg.payload = JSON.parse(msg.payload);\nmsg.payload['_id'] = msg.req.params.device + '';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 488.10003662109375,
+        "y": 159.60000610351562,
+        "wires": [
+            [
+                "da844fd5.4d2e8"
+            ]
+        ]
+    },
+    {
+        "id": "b34c3de5.90423",
+        "type": "inject",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 108.10000610351562,
+        "y": 415.60003662109375,
+        "wires": [
+            [
+                "e67cd427.0be168"
+            ]
+        ]
+    },
+    {
+        "id": "e67cd427.0be168",
+        "type": "cloudant in",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "cloudant": "",
+        "database": "devices",
+        "service": "justLooking-cloudantNoSQLDB",
+        "search": "_all_",
+        "design": "",
+        "index": "",
+        "x": 177.10000610351562,
+        "y": 537.2000122070312,
+        "wires": [
+            [
+                "db54dd04.f60d8",
+                "991f65a9.932548"
+            ]
+        ]
+    },
+    {
+        "id": "db54dd04.f60d8",
+        "type": "debug",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 347.1000671386719,
+        "y": 507.5999755859375,
+        "wires": []
+    },
+    {
+        "id": "39ae57fe.db9648",
+        "type": "function",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "func": "msg.payload = msg.payload.substring(1, msg.payload.length - 1)\nmsg.payload = msg.payload.replace(/'/g, '~')\nmsg.payload = msg.payload.replace(/\"/g, '\\'')\nmsg.payload = msg.payload.replace(/~/g, '\"')\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320.1000061035156,
+        "y": 159.60000610351562,
+        "wires": [
+            [
+                "ecd0457c.a3ebc8"
+            ]
+        ]
+    },
+    {
+        "id": "991f65a9.932548",
+        "type": "split",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 347.1000061035156,
+        "y": 586.6000366210938,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "271c4f7b.2ce1c",
+        "type": "cloudant out",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "cloudant": "",
+        "database": "devices",
+        "service": "justLooking-cloudantNoSQLDB",
+        "payonly": false,
+        "operation": "delete",
+        "x": 355.1000061035156,
+        "y": 694.4000244140625,
+        "wires": []
+    },
+    {
+        "id": "f5db8704.fbf1c8",
+        "type": "cloudant out",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "cloudant": "",
+        "database": "devices",
+        "service": "justLooking-cloudantNoSQLDB",
+        "payonly": false,
+        "operation": "delete",
+        "x": 675.0999755859375,
+        "y": 71.4000129699707,
+        "wires": []
+    },
+    {
+        "id": "77705225.ef430c",
+        "type": "function",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "func": "return {\n    payload: {\n        '_id': msg.req.params.device\n    }\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 315.1000061035156,
+        "y": 38,
+        "wires": [
+            [
+                "2c9389a1.800116"
+            ]
+        ]
+    },
+    {
+        "id": "2c9389a1.800116",
+        "type": "cloudant in",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "cloudant": "",
+        "database": "devices",
+        "service": "justLooking-cloudantNoSQLDB",
+        "search": "_id_",
+        "design": "",
+        "index": "",
+        "x": 510.1000671386719,
+        "y": 71.00000381469727,
+        "wires": [
+            [
+                "f5db8704.fbf1c8"
+            ]
+        ]
+    },
+    {
+        "id": "ab5dad12.fefd8",
+        "type": "delay",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "5",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 99.10000610351562,
+        "y": 646.4000244140625,
+        "wires": [
+            [
+                "271c4f7b.2ce1c"
+            ]
+        ]
+    },
+    {
+        "id": "da844fd5.4d2e8",
+        "type": "delay",
+        "z": "908ae2c0.dad89",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 510,
+        "y": 300,
+        "wires": [
+            [
+                "7b7794a9.73bbcc"
+            ]
+        ]
+    },
+    {
+        "id": "3ff376d5.749faa",
+        "type": "change",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "auth",
+                "pt": "flow",
+                "to": "{ \"Authorization\": \"Bearer BQAVogXHEzdIMbz0zG_Kql90rsp6mwzoTZWORbKlEp0fd66lDtwLKgttvryEJO9ya3lq08F1GwWVwp-F1Ut0IDhnIIQ66mauMnaNeQslGYws-ssRUOuMN3bQ-MPYmOTbhMu701vSa7ExJt1Ba1KXPxH_6MHkBNv7SW0-IvQjcyDed4f0HRWUPwnPeFs\"}",
+                "tot": "json"
+            },
+            {
+                "t": "set",
+                "p": "user",
+                "pt": "flow",
+                "to": "whaleoftime",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "id",
+                "pt": "flow",
+                "to": "1",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 290,
+        "y": 55,
+        "wires": [
+            [
+                "efbb93a2.c6c7e",
+                "7da57b3c.aa1d84"
+            ]
+        ]
+    },
+    {
+        "id": "7da57b3c.aa1d84",
+        "type": "function",
+        "z": "afe73ce4.aca77",
+        "name": "top artists",
+        "func": "msg={}\nmsg.url = \"https://api.spotify.com/v1/me/top/artists\"\nmsg.headers = flow.get(\"auth\")\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 656.5,
+        "y": 127,
+        "wires": [
+            [
+                "a9685c7e.52c408",
+                "10d182e0.5b29a5"
+            ]
+        ]
+    },
+    {
+        "id": "a9685c7e.52c408",
+        "type": "http request",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 824.5,
+        "y": 127,
+        "wires": [
+            [
+                "10d182e0.5b29a5"
+            ]
+        ]
+    },
+    {
+        "id": "10d182e0.5b29a5",
+        "type": "debug",
+        "z": "afe73ce4.aca77",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 969.5,
+        "y": 46,
+        "wires": []
+    },
+    {
+        "id": "841b33db.e0c29",
+        "type": "http in",
+        "z": "d5f424e.3e83ed8",
+        "name": "",
+        "url": "/devices/:device",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 277.5,
+        "y": 189,
+        "wires": [
+            [
+                "469c54b3.3f64ac"
+            ]
+        ]
+    },
+    {
+        "id": "469c54b3.3f64ac",
+        "type": "function",
+        "z": "d5f424e.3e83ed8",
+        "name": "",
+        "func": "msg['payload'] = {\n        _id: msg.req.params.device\n    }\n    return msg",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 371.5,
+        "y": 291,
+        "wires": [
+            [
+                "de591557.e66c08",
+                "9154f5fb.2f10a8"
+            ]
+        ]
+    },
+    {
+        "id": "de591557.e66c08",
+        "type": "cloudant in",
+        "z": "d5f424e.3e83ed8",
+        "name": "",
+        "cloudant": "",
+        "database": "devices",
+        "service": "justLooking-cloudantNoSQLDB",
+        "search": "_id_",
+        "design": "",
+        "index": "",
+        "x": 421.5,
+        "y": 391,
+        "wires": [
+            [
+                "3edeea4d.bf0dc6",
+                "9154f5fb.2f10a8"
+            ]
+        ]
+    },
+    {
+        "id": "3edeea4d.bf0dc6",
+        "type": "http response",
+        "z": "d5f424e.3e83ed8",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 440.5,
+        "y": 491,
+        "wires": []
+    },
+    {
+        "id": "9154f5fb.2f10a8",
+        "type": "debug",
+        "z": "d5f424e.3e83ed8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 544.5,
+        "y": 319,
+        "wires": []
+    }
+]
